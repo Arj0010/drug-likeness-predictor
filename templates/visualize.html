@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Molecule Viewer</title>
+    <script src="https://3Dmol.csb.pitt.edu/build/3Dmol-min.js"></script>
+    <style>
+        /* Remove all margins, padding, and scrollbars */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        /* Make the viewer fill the entire screen */
+        html, body {
+            width: 100%;
+            height: 100%;
+            background-color:white;
+        }
+
+        /* Ensure the viewer fully covers the screen */
+        #viewer {
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="viewer"></div> <!-- ✅ 3Dmol Container -->
+
+    <script>
+        const molBlock = `{{ mol_block|safe }}`;
+        console.log("✅ MOL Block received:", molBlock);
+
+        var viewer = $3Dmol.createViewer(document.getElementById("viewer"), {backgroundColor: "white"});
+        viewer.addModel(molBlock, "mol");  // ✅ Use MOL format instead of SMILES
+        viewer.setStyle({}, {stick: {colorscheme: "element"}});  // ✅ Stick Representation
+        viewer.zoomTo();
+        viewer.render();
+    </script>
+
+</body>
+</html>

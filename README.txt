@@ -1,0 +1,21 @@
+These are likely to be drug-like molecules:
+
+Cn1cnc(CNC(=O)N2CCC[C@H]2c2ccc(F)cc2)n1 → qed = 0.9479
+O=C(Cn1ccc(C(F)(F)F)n1)NN1Cc2ccccc2C1 → qed = 0.9479
+CN(C[C@H]1CCCCO1)C(=O)c1cc2ccccc2c(=O)[nH]1 → qed = 0.9477
+CN(C)S(=O)(=O)N1CC=C(c2c[nH]c3ccccc23)CC1 → qed = 0.9477
+
+
+These are unlikely to be drug-like:
+
+O=C(CCCC[C@H]1SC[C@@H]2NC(=O)N[C@@H]21)N/N=C/c1ccccc1 → qed = 0.1167
+O=C(COc1c(F)c(F)c(F)c(F)c1F)Oc1ccc2c(c1)O/C(=C/C(=O)O)C(=O)c1ccccc12 → qed = 0.1257
+O=C(CSc1nc2ccccc2c(=O)n1-c1ccc(Cl)cc1)N/N=C/c1ccccc1 → qed = 0.1301
+
+
+WAY TO FLASK
+OPEN ANACONDA PROMPT
+TYPE IN 
+conda activate tf310_env
+cd Documents\BCA\SEM 6\ML\Project
+python app.py
