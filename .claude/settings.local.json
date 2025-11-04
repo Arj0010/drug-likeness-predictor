@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl:*)",
+      "Bash(if [ -f \"ui.png\" ])",
+      "Bash(then mv ui.png static/screenshots/)",
+      "Bash(fi)",
+      "Bash(if [ -f \"2d_structure.png\" ])",
+      "Bash(then mv 2d_structure.png static/screenshots/)",
+      "Bash(if [ -f \"3d_structure.png\" ])",
+      "Bash(then mv 3d_structure.png static/screenshots/)",
+      "Bash(if [ -f \"ML PROJECT - 2025 - PPT FINAL.pptx\" ])",
+      "Bash(then mv \"ML PROJECT - 2025 - PPT FINAL.pptx\" docs/)",
+      "Bash(if [ -f \"Project Report.pdf\" ])",
+      "Bash(then mv \"Project Report.pdf\" docs/)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
