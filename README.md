@@ -1,7 +1,7 @@
 ---
 title: Drug Likeness Predictor
 emoji: 💊
-colorFrom: cyan
+colorFrom: blue
 colorTo: purple
 sdk: gradio
 sdk_version: "4.44.1"
