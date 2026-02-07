@@ -75,25 +75,23 @@ def convert_smiles_to_mol(smiles: str) -> Optional[str]:
 
 def build_3d_html(mol_block: str) -> str:
     """Return an HTML snippet with an embedded 3Dmol.js viewer."""
-    escaped = mol_block.replace("\\", "\\\\").replace("`", "\\`").replace("$", "\\$")
+    import hashlib
+    import time
+    import html
+
+    # Create unique ID to force re-render
+    unique_id = hashlib.md5(f"{mol_block}{time.time()}".encode()).hexdigest()[:8]
+
+    # Escape MOL data for HTML attribute
+    escaped_mol = html.escape(mol_block)
+
     return f"""
-    <div id="viewer-container" style="width:100%;display:flex;justify-content:center;">
-        <div id="mol-viewer" style="width:500px;height:400px;border:1px solid #ccc;border-radius:8px;"></div>
+    <div style="width:100%;display:flex;justify-content:center;align-items:center;padding:20px 0;">
+        <div id="mol-viewer-{unique_id}"
+             data-mol="{escaped_mol}"
+             style="width:500px;height:400px;border:1px solid #ccc;border-radius:8px;margin:0 auto;position:relative;overflow:hidden;">
+        </div>
     </div>
-    <script src="https://3Dmol.org/build/3Dmol-min.js"></script>
-    <script>
-        (function() {{
-            var viewer = $3Dmol.createViewer(document.getElementById("mol-viewer"), {{
-                backgroundColor: "white"
-            }});
-            var molData = `{escaped}`;
-            viewer.addModel(molData, "mol");
-            viewer.setStyle({{}}, {{stick: {{radius: 0.15}}, sphere: {{scale: 0.25}}}});
-            viewer.zoomTo();
-            viewer.render();
-            viewer.spin("y", 1);
-        }})();
-    </script>
     """
 
 
@@ -142,7 +140,55 @@ example_smiles = [
     ["C1=CC=CC=C1"],                       # Benzene (non-drug-like)
 ]
 
-with gr.Blocks(theme=gr.themes.Soft(), title="Drug-Likeness Predictor") as demo:
+with gr.Blocks(
+    title="Drug-Likeness Predictor",
+    head='''
+    <script src="https://3Dmol.org/build/3Dmol-min.js"></script>
+    <script>
+    // Auto-initialize 3D viewers when they appear in the DOM
+    window.init3DViewers = function() {
+        const viewers = document.querySelectorAll('[id^="mol-viewer-"]:not([data-initialized])');
+        viewers.forEach(function(container) {
+            if (typeof window.$3Dmol === 'undefined') {
+                setTimeout(window.init3DViewers, 100);
+                return;
+            }
+
+            const molData = container.getAttribute('data-mol');
+            if (!molData) return;
+
+            container.setAttribute('data-initialized', 'true');
+            const viewer = window.$3Dmol.createViewer(container, {
+                backgroundColor: "white"
+            });
+            viewer.addModel(molData, "mol");
+            viewer.setStyle({}, {stick: {radius: 0.15}, sphere: {scale: 0.25}});
+            viewer.zoomTo();
+            viewer.render();
+            viewer.spin("y", 1);
+        });
+    };
+
+    // Watch for new viewer divs
+    if (typeof MutationObserver !== 'undefined') {
+        const observer = new MutationObserver(function(mutations) {
+            window.init3DViewers();
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+            window.init3DViewers();
+        });
+    }
+
+    // Fallback: check periodically
+    setInterval(window.init3DViewers, 500);
+    </script>
+    '''
+) as demo:
     gr.Markdown(
         """
         # Drug-Likeness Predictor
@@ -163,7 +209,11 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Drug-Likeness Predictor") as demo:
             predict_btn = gr.Button("Predict Drug-Likeness", variant="primary")
         with gr.Column():
             prediction_output = gr.Textbox(label="Prediction", interactive=False)
-            image_output = gr.Image(label="2D Molecular Structure", type="pil")
+            image_output = gr.Image(
+                label="2D Molecular Structure",
+                type="pil",
+                buttons=["download", "fullscreen"],
+            )
 
     viewer_html = gr.HTML(label="3D Interactive Viewer")
 
@@ -185,4 +235,4 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Drug-Likeness Predictor") as demo:
     )
 
 if __name__ == "__main__":
-    demo.launch()
+    demo.launch(theme=gr.themes.Soft())
