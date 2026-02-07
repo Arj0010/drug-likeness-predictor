@@ -142,6 +142,7 @@ example_smiles = [
 
 with gr.Blocks(
     title="Drug-Likeness Predictor",
+    theme=gr.themes.Soft(),
     head='''
     <script src="https://3Dmol.org/build/3Dmol-min.js"></script>
     <script>
@@ -212,7 +213,7 @@ with gr.Blocks(
             image_output = gr.Image(
                 label="2D Molecular Structure",
                 type="pil",
-                buttons=["download", "fullscreen"],
+                show_download_button=True,
             )
 
     viewer_html = gr.HTML(label="3D Interactive Viewer")
@@ -235,4 +236,4 @@ with gr.Blocks(
     )
 
 if __name__ == "__main__":
-    demo.launch(theme=gr.themes.Soft())
+    demo.launch()
